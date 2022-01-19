@@ -1,0 +1,2 @@
+graft docs
+include task_thread/data/some_auxiliary_file

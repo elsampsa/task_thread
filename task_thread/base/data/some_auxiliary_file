@@ -1,0 +1,1 @@
+Some auxiliary data ("static files") that is used by the python module.  Use tools.getDataFile("some_auxiliar_file") to get the complete path to this file.
