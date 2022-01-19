@@ -19,7 +19,7 @@ pip3 install --user --upgrade -e .
 
 Or directly from the PyPi repo:
 ```
-pip3 install --user pip3 install task-virtualthread
+pip3 install --user task-virtualthread
 ```
 
 ## Authors
