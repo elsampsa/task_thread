@@ -153,6 +153,8 @@ html_theme_options = {
   #'github_user'  : 'elsampsa',
   #'github_repo'  : 'TaskThread',
   # 'analytics_id' : 'XX-XXX-X' # for google analytics tracking, uncomment this
+  'page_width' : '60%',
+  'body_max_width': 'auto'
 }
 
 # Theme options are theme-specific and customize the look and feel of a theme
@@ -311,7 +313,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'TaskThread', 'TaskThread Documentation',
-     author, 'TaskThread', 'Asynchronous Programming for Humas',
+     author, 'TaskThread', 'Asynchronous Programming for Human Beings',
      'Miscellaneous'),
 ]
 
