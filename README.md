@@ -2,15 +2,13 @@
 
 ## Synopsis
 
-Organize your complex asyncio python projects with hierarchical "threads".
+Organize your complex asyncio python projects into hierarchical, intercommunicating "threads".
 
 For documentation, click [here](https://elsampsa.github.io/task_thread)
 
 *Proper documentation coming soon!*
 
 ## Installing
-
-(WARNING: it's "task_thread" with underscore, not "task-thread")
 
 Development mode install:
 ```
@@ -21,7 +19,7 @@ pip3 install --user --upgrade -e .
 
 Or directly from the PyPi repo:
 ```
-pip3 install --user task_thread
+pip3 install --user pip3 install task-virtualthread
 ```
 
 ## Authors

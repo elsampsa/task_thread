@@ -6,7 +6,8 @@ version = '0.0.0'
 
 # # https://setuptools.readthedocs.io/en/latest/setuptools.html#basic-use
 setup(
-    name = "task_thread",
+    # name = "task_thread", # shit.. reserved
+    name = "task_virtualthread",
     version = version,
     install_requires = [
         "numpy"
@@ -50,6 +51,7 @@ setup(
     # long_description_content_type='text/x-rst', # this works
     # long_description_content_type='text/markdown', # this does not work
     
+    # see: https://autopilot-docs.readthedocs.io/en/latest/license_list.html
     classifiers      =[  # Optional
         # How mature is this project? Common values are
         #   3 - Alpha
@@ -62,7 +64,7 @@ setup(
         # 'Topic :: Multimedia :: Video', # set a topic
         # Pick your license as you wish
         # 'License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)',
-        'License :: OSI Approved :: MIT',
+        'License :: OSI Approved :: MIT License',
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 3',
