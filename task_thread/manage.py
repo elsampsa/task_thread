@@ -3,7 +3,7 @@
 * Copyright: 2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 1/2022
-* Version  : 0.1
+* Version  : 0.0.1
 
 This file is part of the task_thread library
 

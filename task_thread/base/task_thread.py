@@ -3,7 +3,7 @@
 * Copyright: 2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 1/2022
-* Version  : 0.1
+* Version  : 0.0.1
 
 This file is part of the task_thread library
 
@@ -114,7 +114,6 @@ class TaskThread:
         Don't subclass.
         """
         try:
-
             if not self.running:
                 self.logger.warning("insertSignal: signal %s to thread %s that is not running!", signal, self.getInfo())
 
@@ -167,14 +166,13 @@ class TaskThread:
             self.running = True
             while await self.watchSignals__(): # run loop until watchSignals returns False
                 pass
-            self.running = False
-            # if this is a child thread, it tells parent to stop listening to it:
-            await self.sigFromChildToParent__(signals.CloseSignal()) 
+            self.running = False 
             await self.exit__()
             async with self.locks.children: # just in case if the list is modified during awaits
                 for child in self.children:
+                    self.logger.log(LOWLEVEL,"mainLoop__ : stop listening to %s", child)
+                    await delete(self.child_listener_tasks[child])
                     self.logger.log(LOWLEVEL,"mainLoop__ : sending terminate to %s", child)
-                    # await child.insertSignal(signals.TerminateSignal())
                     await child.terminate()
                     await child.main_loop # wait till child's main_loop task has been finished
                     
@@ -220,7 +218,36 @@ class TaskThread:
         """
         if self.running:
             await self.insertSignal(signals.TerminateSignal())
+
+        """
+
+        child must requests its termination from parent:
+        this way parent knows to stop listening to it
+
+        requestTerminate:
+            sigFromChildToParent__ ==> CloseSignal
+            childListenerTask__ ==> removes listener, calls delChild(child)
+            locks children list .. remove from list & call child.terminate
+
+        parent terminate:
+
+            TerminateSignal => watchSignals__ returns False
+            self.running = False
+            locks children list
+            delete listener & calls child.terminate
+
+        """
+
+    async def requestTerminate(self):
+        await self.sigFromChildToParent__(signals.CloseSignal())
         
+
+    async def stop(self):
+        if self.parent is None: # main level thread
+            await self.terminate()
+        else:
+            await self.requestTerminate()
+
 
     @verbose
     async def addChild(self, child):
@@ -240,7 +267,6 @@ class TaskThread:
                     child
                 )
             
-
     @verbose
     async def delChild(self, child):
         """Deletes / removes a children.  
@@ -276,17 +302,18 @@ class TaskThread:
                 try:
                     self.child_listener_tasks.pop(child)
                 except KeyError:
-                    self.logger.warning("childListenerTask__: could not remove child %s", child)
+                    self.logger.warning("childListenerTask__: could not remove listener for %s", child)
+                await self.delChild(child)
                 return # no re-scheduling
             
             else:
                 self.logger.log(LOWLEVEL,"childListenerTask__: got signal %s from child %s", signal, child.getInfo())
                 await self.childsignalHandler__(signal, child)
-                self.logger.log(LOWLEVEL,"childListenerTask__: rescheduling child %s", child.getInfo())
+                self.logger.log(LOWLEVEL,"childListenerTask__: rescheduling listener for %s", child.getInfo())
                 await reschedule(); return
                 
         except asyncio.CancelledError:
-            self.logger.critical("childListenerTask__: cancelling, but should not get cancelled!")
+            self.logger.log(LOWLEVEL,"childListenerTask__: cancelling for %s", child)
             
         except Exception as e:
             self.logger.warning("childListenerTask__: '%s', traceback will follow", str(e))
@@ -331,17 +358,20 @@ class TaskThread:
                 
         
     @verbose
-    async def sigFromParentToChild__(self, signal):
+    async def sigFromParentToChild__(self, signal, child = None):
         """Send signal to all child threads.  
         
         Don't subclass.
         """
-        async with self.children.lock:
+        async with self.locks.children:
             # self.logger.log(LOWLEVEL,"sigFromParentToChild__: parent %s", str(self))
-            for child in self.children:
-                # self.logger.log(LOWLEVEL,"sigFromParentToChild__: parent %s send signal %s, children %s", str(self), str(signal), str(child))
+            if child is None:
+                for child in self.children:
+                    # self.logger.log(LOWLEVEL,"sigFromParentToChild__: parent %s send signal %s, children %s", str(self), str(signal), str(child))
+                    await child.insertSignal(signal)
+            else:
                 await child.insertSignal(signal)
-            
+
         
     @verbose
     async def sigFromChildToParent__(self, signal):
