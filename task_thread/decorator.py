@@ -3,13 +3,15 @@
 * Copyright: 2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 1/2022
-* Version  : 0.0.1
+* Version  : 0.0.2
 
 This file is part of the task_thread library
 
 Licensed according to the MIT License.  Please see file COPYING.MIT for more details.
 """
 import asyncio
+import sys
+import traceback
 
 def verbose(f):
     """Decorator for coroutines
@@ -26,7 +28,10 @@ def verbose(f):
             raise(e)
         
         except Exception as e: # any other exception should be reported, and BaseException raised so that the program stops
-            raise(BaseException) # enable this if you wan't exceptions raised.  Good for first-stage debugging # DEBUGGING
+            # raise(BaseException) # enable this if you wan't exceptions raised.  Good for first-stage debugging # DEBUGGING
+            traceback.print_exc()
+            sys.exit(2)
+
 
     wrapper.__name__ = f.__name__
     wrapper.__doc__  = f.__doc__

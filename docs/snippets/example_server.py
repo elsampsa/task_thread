@@ -45,7 +45,7 @@ class TCPConnectionThread(TaskThread):
             except Exception as e:
                 self.logger.warning("readSocket__ : reading failed : '%s'", e)
                 self.logger.info("readSocket__: tcp connection %s terminated", self.getInfo())
-                await self.terminate()
+                await self.stop()
             else:
                 if len(packet) > 0:
                     # all good!  keep on reading = reschedule this
@@ -53,14 +53,14 @@ class TCPConnectionThread(TaskThread):
                     self.tasks.read_socket = await reSchedule(self.readSocket__); return
                 else:
                     self.logger.info("readSocket__: client at %s closed connection", self.peername)
-                    await self.terminate()
+                    await self.stop()
 
         except asyncio.CancelledError:
             self.logger.info("readSocket__ : cancelling %s", self.getInfo())
             
         except Exception as e:
             self.logger.warning("readSocket__: failed with '%s'", e)
-            await self.terminate()
+            await self.stop()
         
         
     async def writeSocket__(self, packet):        
@@ -69,7 +69,7 @@ class TCPConnectionThread(TaskThread):
             # await self.writer.drain() # this would flush
         except Exception as e:
             self.logger.warning("writeSocket__ : writing failed : '%s'", e)
-            await self.terminate()
+            await self.stop()
     
 
 class MasterTCPServerThread(TaskThread):
