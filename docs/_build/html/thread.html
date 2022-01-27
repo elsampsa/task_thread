@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anatomy of a TaskThread &#8212; TaskThread  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Anatomy of a Task" href="task.html" />
+    <link rel="prev" title="About TaskThread" href="intro.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="anatomy-of-a-taskthread">
+<span id="thread"></span><h1>Anatomy of a TaskThread<a class="headerlink" href="#anatomy-of-a-taskthread" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="imports">
+<h2>Imports<a class="headerlink" href="#imports" title="Permalink to this headline">¶</a></h2>
+<p>The necessary imports for writing your TaskThread are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
+    <span class="n">delete</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="subclassing">
+<h2>Subclassing<a class="headerlink" href="#subclassing" title="Permalink to this headline">¶</a></h2>
+<p>You create a custom thread by subclassing from the <code class="docutils literal notranslate"><span class="pre">TaskThread</span></code> base class.</p>
+<p>The methods in <code class="docutils literal notranslate"><span class="pre">TaskThread</span></code> that you must override are:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">signalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">childsignalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">getId</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Let’s take a closer look at each one of these methods.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">__init__</span></code> you <em>must</em> call the superclass method (similar to <code class="docutils literal notranslate"><span class="pre">threading</span></code> and <code class="docutils literal notranslate"><span class="pre">multiprocess</span></code> modules):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
+    <span class="c1"># whatever extra stuff</span>
+</pre></div>
+</div>
+<p>In <code class="docutils literal notranslate"><span class="pre">initVars</span></code> you define the rescheduling tasks that define the functionality of your
+TaskThread:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create &amp; initialize here your tasks with none &amp; create your locks</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1"># etc.</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">locks</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Lock</span><span class="p">()</span>
+    <span class="c1"># etc.</span>
+</pre></div>
+</div>
+<p>Notice how the tasks are organized under their own namespace <code class="docutils literal notranslate"><span class="pre">self.tasks</span></code>.
+All tasks are initialized as <code class="docutils literal notranslate"><span class="pre">None</span></code>.  There is a separate convenience
+namespace <code class="docutils literal notranslate"><span class="pre">self.locks</span></code> for asyncio locks.</p>
+<p>The starting point for your thread is defined in <code class="docutils literal notranslate"><span class="pre">enter__</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__ : </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">readerMethod__</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">reader</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">reader</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">writerMethod__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Here we use a special decorator <code class="docutils literal notranslate"><span class="pre">&#64;verbose</span></code> that makes life with asyncio a bit easier - it catches
+some exceptions explicitly for you.</p>
+<p>We start the rescheduled tasks using the convenience function <code class="docutils literal notranslate"><span class="pre">reCreate</span></code>.  The target
+of the task is <code class="docutils literal notranslate"><span class="pre">self.readerMethod__</span></code> where the task is defined (more on this in the
+section <a class="reference internal" href="task.html#task"><span class="std std-ref">about tasks</span></a>).</p>
+<p>Next, you still remember the hierarchical way the threads are organized and how they
+communicate?  <code class="docutils literal notranslate"><span class="pre">signalHandler__</span></code> defines what the TaskThread should do when it gets
+a message/data <strong>from a parent</strong>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">signalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;signalHandler__ : got signal </span><span class="si">%s</span><span class="s2"> from parent&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The implementation of this method depends, of course, completely on your TaskThread’s
+functionality.</p>
+<p>A thread must also know what to do when it gets a signal from a child.  This is defined
+in <code class="docutils literal notranslate"><span class="pre">childsignalHandler__</span></code>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">childsignalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;childsignalHandler__ : got signal </span><span class="si">%s</span><span class="s2"> from child </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Finally, <code class="docutils literal notranslate"><span class="pre">getId</span></code> returns some unique string or int corresponding to this TaskThread
+(nice for search/organizational purposes), while <code class="docutils literal notranslate"><span class="pre">getInfo</span></code> returns a string representation
+of the TaskThread (i.e. like <code class="docutils literal notranslate"><span class="pre">__str__</span></code>).</p>
+<p>You could write:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">getId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="nb">id</span><span class="p">(</span><span class="bp">self</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;&lt;MyThread &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span><span class="o">+</span><span class="s2">&quot;&gt;&quot;</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="key-methods">
+<h2>Key Methods<a class="headerlink" href="#key-methods" title="Permalink to this headline">¶</a></h2>
+<p>By using subclassing, we have defined what our TaskThread <em>does</em>.
+Next we take a look at the API methods, i.e. how to <em>use</em> the TaskThread.</p>
+<p>Let’s take a quick overview on the available methods in the TaskThread class.</p>
+<p>However, in order to know how to <em>really</em> use these methods, you need to go through the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">examples</span></a>.</p>
+<p>A TaskThread is created like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">thread</span> <span class="o">=</span> <span class="n">MyThread</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start running it with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Stop with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>and wait until it has finished:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">join</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>A child thread can terminate itself, by calling <code class="docutils literal notranslate"><span class="pre">self.stop()</span></code>.</p>
+<p>Stopping a child automatically removes it from any listening parent.</p>
+<p>You can add a child thread to a parent thread:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">addChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After that, parent starts listening any signals from the child.</p>
+<p>You can remove the child from a parent:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">delChild</span><span class="p">(</span><span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now the child’s signals are not listened by the parent anymore (it’s removed from parent’s registry).</p>
+<p>Finding a child, based on it’s id, as returned by it’s <code class="docutils literal notranslate"><span class="pre">getId()</span></code> method is done with:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">findChild</span><span class="p">(</span><span class="n">_id</span> <span class="o">=</span> <span class="n">_id</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Sending a signal from parent to child, i.e. down/deeper in the hierarchical parent/child
+structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">sigFromParentToChild__</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If child is replaced by <code class="docutils literal notranslate"><span class="pre">None</span></code>, the same signal is sent to all children.</p>
+<p>Sending a signal the other way around: from children to parent, i.e. upwards in the tree:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">await</span> <span class="n">thread</span><span class="o">.</span><span class="n">sigFromChildToParent__</span><span class="p">(</span><span class="n">signal</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="signals">
+<h2>Signals<a class="headerlink" href="#signals" title="Permalink to this headline">¶</a></h2>
+<p>Signals are those things that go to and fro between parent and child threads.</p>
+<p>A typical signal looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MessageSignal</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">Signal</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A generic message message signal, carrying a python object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;MessageSignal with message </span><span class="si">%s</span><span class="s2">&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">))</span>
+
+    <span class="k">def</span> <span class="nf">getMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;syntactic sugar&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">getMessage</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Signals can carry messages, byte payload, whatever.</p>
+<p>Next, let’s take a closer look at <a class="reference internal" href="task.html#task"><span class="std std-ref">tasks</span></a>.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<a href="index.html">
+    <img class="logo" src="_static/tmp.png">
+</a>
+
+<p>Asynchronous Python for Human Beings</p>
+<a class="github-button" href="https://github.com/elsampsa/task_thread" data-size="large" data-show-count="true" aria-label="Star elsampsa/task_thread on GitHub">Star</a>
+<!--
+<p>
+  <iframe src="http://ghbtns.com/github-btn.html?user=elsampsa&repo=valkka-core&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+-->
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://github.com/elsampsa/task_thread"><i class="fab fa-github"></i> task_thread @ GitHub</a></li>
+  <li><a href="https://github.com/elsampsa/task_thread/issues"><i class="fas fa-bug"></i> Issue Tracker</a></li>
+</ul>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">About TaskThread</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Anatomy of a TaskThread</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#imports">Imports</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#subclassing">Subclassing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#key-methods">Key Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#signals">Signals</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">Anatomy of a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threadtask.html">Threads and Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Tutorial / Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright &amp; License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022 Sampsa Riikonen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/thread.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -16,7 +16,9 @@ Contents:
    :maxdepth: 2
 
    intro
+   thread
+   task
+   threadtask
    examples
    license
    authors
-

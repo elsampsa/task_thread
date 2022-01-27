@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Anatomy of a Task &#8212; TaskThread  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Threads and Tasks" href="threadtask.html" />
+    <link rel="prev" title="Anatomy of a TaskThread" href="thread.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="anatomy-of-a-task">
+<span id="task"></span><h1>Anatomy of a Task<a class="headerlink" href="#anatomy-of-a-task" title="Permalink to this headline">¶</a></h1>
+<p>How do these “rescheduling tasks” that constitute a “TaskThread” look like?</p>
+<p>Let’s consider a silly task that sleeps for 1 sec and then re-schedules itself</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
+    <span class="n">delete</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
+
+<span class="o">...</span>
+<span class="o">...</span>
+
+<span class="k">async</span> <span class="k">def</span> <span class="nf">helloTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Hello from helloTask__ at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello_task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reSchedule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;helloTask__: cancelling&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;helloTask__: failed with &#39;</span><span class="si">%s</span><span class="s2">&#39;, traceback will follow&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>with emphasis on this structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+    <span class="o">...</span>
+
+<span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+<p>i.e., if everything is ok - the task has done it’s thing, say, reading payload from i/o,
+writing i/o, or whatever - it then then <strong>reschedules itself</strong>.</p>
+<p>Rescheduling is done using the <code class="docutils literal notranslate"><span class="pre">reSchedule</span></code> convenience function:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello_task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reSchedule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>A large group of these auto-rescheduling tasks that toil around and do their stuff, behave effectively like a “classical” running thread.</p>
+<p>Finally, remember to use the correct convenience function for each case:</p>
+<ul class="simple">
+<li><p>When creating the task for the first time, use <code class="docutils literal notranslate"><span class="pre">reCreate</span></code></p></li>
+<li><p>When rescheduling the task, use <code class="docutils literal notranslate"><span class="pre">reCreate</span></code></p></li>
+<li><p>When removing the task, use <code class="docutils literal notranslate"><span class="pre">delete</span></code></p></li>
+</ul>
+<p>Next, let’s <a class="reference internal" href="threadtask.html#threadtask"><span class="std std-ref">bring TaskThreads and tasks together</span></a>.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<a href="index.html">
+    <img class="logo" src="_static/tmp.png">
+</a>
+
+<p>Asynchronous Python for Human Beings</p>
+<a class="github-button" href="https://github.com/elsampsa/task_thread" data-size="large" data-show-count="true" aria-label="Star elsampsa/task_thread on GitHub">Star</a>
+<!--
+<p>
+  <iframe src="http://ghbtns.com/github-btn.html?user=elsampsa&repo=valkka-core&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+-->
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://github.com/elsampsa/task_thread"><i class="fab fa-github"></i> task_thread @ GitHub</a></li>
+  <li><a href="https://github.com/elsampsa/task_thread/issues"><i class="fas fa-bug"></i> Issue Tracker</a></li>
+</ul>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">About TaskThread</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread.html">Anatomy of a TaskThread</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Anatomy of a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threadtask.html">Threads and Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Tutorial / Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright &amp; License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022 Sampsa Riikonen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/task.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

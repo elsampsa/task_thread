@@ -1,8 +1,8 @@
 
+.. _examples:
+
 Tutorial / Examples
 ===================
-
-DOCUMENTATION COMING SOON
 
 1. Hello World
 --------------
@@ -25,7 +25,6 @@ Download example code from :download:`[here]<snippets/parent_child.py>`
 - Download client side code from :download:`[here]<snippets/client.py>`
 
 .. include:: snippets/example_server.py_
-
 
 4. Data Streaming TCP Server
 ----------------------------

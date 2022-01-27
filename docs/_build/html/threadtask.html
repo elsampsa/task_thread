@@ -1,0 +1,177 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Threads and Tasks &#8212; TaskThread  documentation</title>
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial / Examples" href="examples.html" />
+    <link rel="prev" title="Anatomy of a Task" href="task.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="threads-and-tasks">
+<span id="threadtask"></span><h1>Threads and Tasks<a class="headerlink" href="#threads-and-tasks" title="Permalink to this headline">¶</a></h1>
+<p>So, now you have been initiated on how to create a TaskThread and rescheduling tasks and signals.</p>
+<p>Let’s bring it all together.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
+    <span class="n">delete</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
+</pre></div>
+</div>
+<p>Subclass the necessary methods to specify a TaskThread:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">=</span> <span class="n">my_id</span>
+</pre></div>
+</div>
+<p>List your tasks:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># implementation in &quot;self.helloTask__&quot;</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">enter__</span></code> starts the task for the first time:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">exit__</span></code> kills the task:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;exit__ : finished&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>For the moment, no signal handling:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">signalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;signalHandler__ : got signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Rest of the methods:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">getId</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span>
+
+<span class="k">def</span> <span class="nf">getInfo</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">return</span> <span class="s2">&quot;&lt;MyThread &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;&gt;&quot;</span>
+</pre></div>
+</div>
+<p>Finally, define the only task that is running in this TaskThread:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">helloTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A task that prints hello &amp; re-schedules itself</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Hello from helloTask__ at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello_task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reSchedule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
+        <span class="k">return</span>
+
+    <span class="k">except</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">CancelledError</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">critical</span><span class="p">(</span><span class="s2">&quot;helloTask__: cancelling&quot;</span><span class="p">)</span>
+
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;helloTask__: failed with &#39;</span><span class="si">%s</span><span class="s2">&#39;, traceback will follow&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Finaly, the program runs like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">loglev</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;MyThread&quot;</span><span class="p">)</span>
+<span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">loglev</span><span class="p">)</span>
+
+<span class="n">thread</span> <span class="o">=</span> <span class="n">MyThread</span><span class="p">(</span><span class="n">my_id</span> <span class="o">=</span> <span class="s2">&quot;main_thread&quot;</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+<span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span><span class="n">thread</span><span class="o">.</span><span class="n">run</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>What next?</p>
+<p>To create a real program that does anything worthwhile, you still need to study
+and understand the <a class="reference internal" href="examples.html#examples"><span class="std std-ref">examples</span></a>.</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+
+<!-- Place this tag in your head or just before your close body tag. -->
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+<a href="index.html">
+    <img class="logo" src="_static/tmp.png">
+</a>
+
+<p>Asynchronous Python for Human Beings</p>
+<a class="github-button" href="https://github.com/elsampsa/task_thread" data-size="large" data-show-count="true" aria-label="Star elsampsa/task_thread on GitHub">Star</a>
+<!--
+<p>
+  <iframe src="http://ghbtns.com/github-btn.html?user=elsampsa&repo=valkka-core&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+-->
+
+<h3>Links</h3>
+<ul>
+  <li><a href="https://github.com/elsampsa/task_thread"><i class="fab fa-github"></i> task_thread @ GitHub</a></li>
+  <li><a href="https://github.com/elsampsa/task_thread/issues"><i class="fas fa-bug"></i> Issue Tracker</a></li>
+</ul>
+<h3><a href="index.html">Table of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">About TaskThread</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread.html">Anatomy of a TaskThread</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">Anatomy of a Task</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Threads and Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Tutorial / Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright &amp; License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+</ul>
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2022 Sampsa Riikonen.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/threadtask.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
