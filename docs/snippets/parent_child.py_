@@ -1,15 +1,16 @@
+
 :: 
 
-    import asyncio, logging
-    import traceback
-    
+    import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
         delete, verbose, signals
     
-    
+
+Let's define a signal for parent/child communication
+
+:: 
+
     class MessageSignal(signals.Signal):
-        """A generic message message signal, carrying a python object
-        """
         def __init__(self, origin, message):
             self.origin = origin
             self.message = message
@@ -20,98 +21,29 @@
         def getMessage(self):
             return self.message
     
-    
-    
+
+We use the same ``MyThread`` as in the previous example. 
+We will use it as a basis for further subclassing
+
+:: 
+
     class MyThread(TaskThread):
-        
-        # *** recurrent tasks that define the functionality of this thread ***
-        
-        async def helloTask__(self):
-            """A task that prints hello & re-schedules itself
-            """
-            try:
-                # *** define your recurrent task's functionality here ***
-                await asyncio.sleep(1)
-                self.logger.info("Hello from helloTask__ at %s", self.getId())
-                self.tasks.hello_task = await reSchedule(self.helloTask__); return
-                
-            except asyncio.CancelledError:
-                self.logger.critical("helloTask__: cancelling")
-                
-            except Exception as e:
-                self.logger.info("helloTask__: failed with '%s', traceback will follow", e)
-                traceback.print_exc()
-                
-        # *** class ctor ***
+        # as in previous example
+        # ...
     
-        def __init__(self, my_id = 0, parent = None):
-            super().__init__(parent = parent)
-            self.my_id = my_id
-            
-        
-        # *** reimplemented virtual methods: ***
-        
-        def initVars__(self):
-            """Create & initialize here your tasks with none & create your locks
-            """
-            # tasks
-            self.tasks.hello = None  # self.helloTask__
-            
-        
-        @verbose
-        async def enter__(self):
-            """Everything starts from here.  This cofunction is awaited (i.e. not scheduled as a task)
-            
-            - Await for something critical
-            - Shedule the re-scheduling tasks
-            """
-            self.logger.info("entry point")
-            self.tasks.hello = await reCreate(self.tasks.hello, self.helloTask__) 
-            
-        
-        @verbose
-        async def exit__(self):
-            """Close sockets, databases, etc.  Overwrite in child class.
-            """
-            self.tasks.hello = await delete(self.tasks.hello)
-            self.logger.info("exit__ : finished")
-    
-    
-        @verbose
-        async def signalHandler__(self, signal):
-            """Handles a signal that was sent to this thread using insertSignal
-            
-            - Return True if thread should keep on running
-            - Return False if thread should exit (say, in the case of some fatal error)
-            
-            Do subclass this.
-            """
-            self.logger.info("signalHandler__ : got signal %s", signal)
-        
-        
-        def getId(self):
-            """Do subclass this.
-            
-            Return a unique id for this VirtualThread.
-            """
-            return self.my_id
-            
-    
-        def getInfo(self):
-            """Do subclass this
-            
-            Returns information string about this thread
-            """
-            return "<MyThread "+str(self.my_id)+">"
-        
-        
+
+Let's create a child thread.  This thread sends a message to it's parent every 5 seconds:
+
+:: 
+
     class ChildThread(MyThread):
-    
+
+Define a rescheduling task that sends a message to it's parent every 5 seconds
+
+:: 
+
         async def messageTask__(self):
-            """A task that sends a message to its parent thread each 5 seconds
-            """
             try:
-                # *** define your recurrent task's functionality here ***
                 await asyncio.sleep(5)
                 self.logger.info("messageTask__: sending a message to parent")
                 
@@ -127,65 +59,73 @@
                 self.logger.info("messageTask__: failed with '%s', traceback will follow", e)
                 traceback.print_exc()
     
-    
+
+Add the new task to ``self.tasks`` namespace
+
+:: 
+
         def initVars__(self):
-            """Create & initialize here your tasks with none & create your locks
-            """
             # tasks
             self.tasks.hello   = None  # self.helloTask__
             self.tasks.message = None  # self.messageTask__
             # locks
             self.locks.message_lock = asyncio.Lock()
     
-    
+
+Start both tasks at thread start
+
+:: 
+
         @verbose
         async def enter__(self):
-            """Everything starts from here.  This cofunction is awaited (i.e. not scheduled as a task)
-            
-            - Await for something critical
-            - Shedule the re-scheduling tasks
-            """
-            self.logger.info("entry point")
+            self.logger.info("enter__")
             self.tasks.hello = await reCreate(self.tasks.hello, self.helloTask__) 
             self.tasks.message = await reCreate(self.tasks.message, self.messageTask__)
     
-    
+
+Kill both tasks at thread exit
+
+:: 
+
         @verbose
         async def exit__(self):
-            """Close sockets, databases, etc.  Overwrite in child class.
-            """
             self.tasks.hello = await delete(self.tasks.hello)
             self.tasks.message = await delete(self.tasks.message)
             self.logger.info("exit__ : finished")
     
     
-    
+
+Now the parent thread that receives signals from the child:
+
+:: 
+
     class ParentThread(MyThread):
-    
+
+Start ``self.helloTask__`` just like in the child thread.
+
+The new bit here is, that we create and start a child thread at parent thread start.
+
+After starting, the child thread is added to the parent's registry using ``addChild``.
+
+You can experiment by adding more and more child threads.
+
+:: 
+
         @verbose
         async def enter__(self):
-            """Everything starts from here.  This cofunction is awaited (i.e. not scheduled as a task)
-            
-            - Await for something critical
-            - Shedule the re-scheduling tasks
-            """
-            self.logger.info("entry point")
+            self.logger.info("enter__")
             self.tasks.hello = await reCreate(self.tasks.hello, self.helloTask__) 
-            
-            """A child thread is added right away when this thread is started.
-    
-            However, child threads can be created and started in any part of your code, for example,
-            based on some action coming from other child threads, etc.
-            """
             child_thread = ChildThread(my_id = "subthread", parent = self)
             await child_thread.run()
             await self.addChild(child_thread)
         
-    
+
+Define how we handle those signals coming from the running child thread:
+
+:: 
+
         @verbose
         async def childsignalHandler__(self, signal, child):
-            """How to handle a certain signal from children?
-            """
             self.logger.debug("childsignalHandler__ : got signal %s from child %s", signal, child.getId())
             if isinstance(signal, MessageSignal):
                 self.logger.info("Got message %s from child with id %s", 
@@ -193,7 +133,15 @@
             else:
                 pass
     
-    
+
+Please note that you can also start child threads "dynamically", i.e. anywhere in your classes internal methods/recheduling tasks, not just at ``enter__``.
+
+That's it!  Nothing else is needed: when the parent thread terminates, it automagically terminates all of it's child threads.
+
+Run the program with:
+
+:: 
+
     if __name__ == "__main__":
         loglev = logging.DEBUG
     
@@ -206,4 +154,8 @@
         thread = ParentThread(my_id = "parent_thread", parent = None) # no parent, this is the main thread
         loop = asyncio.get_event_loop()
         loop.run_until_complete(thread.run())
-        
+
+Terminate by pressing CTRL-C.
+
+:: 
+

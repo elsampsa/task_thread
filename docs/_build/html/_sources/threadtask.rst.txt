@@ -40,7 +40,7 @@ List your tasks:
             self.logger.info("enter__")
             self.tasks.hello = await reCreate(self.tasks.hello, self.helloTask__) 
 
-``exit__`` kills the task:
+In ``exit__``, kill the re-scheduling tasks:
 
 ::
 
@@ -68,7 +68,7 @@ Rest of the methods:
             return "<MyThread "+str(self.my_id)+">"
 
 
-Finally, define the only task that is running in this TaskThread:
+Finally, define the (only) task that is running in this TaskThread:
         
 ::
 

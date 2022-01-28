@@ -1,12 +1,22 @@
+"""<rtf>
+A bit more complex TCP server with intercom and dataframe reconstruction:
+
+- TCP server starts
+- Client connects to TCP server
+- Server sends a hello json message to the client
+- Client starts streaming byte payload to the server
+- Server reconstructs byte blobs / dataframes from the streaming byte payload
+
+Use the provided client-side code to play around with this.
+<rtf>"""
+
 import asyncio, logging, json
 import numpy as np
 import traceback
-
 from task_thread import TaskThread, reCreate, reSchedule,\
     delete, verbose, signals
 
 INT_NBYTES = 4
-
 
 def json2bytes(dic):
     """Turn dic into json bytes & append the bytes with the json bytes length
@@ -182,11 +192,6 @@ class MasterTCPServerThread(TaskThread):
 
     @verbose
     async def enter__(self):
-        """Everything starts from here.  This cofunction is awaited (i.e. not scheduled as a task)
-        
-        - Await for something critical
-        - Shedule the re-scheduling tasks
-        """
         self.logger.info("entry point")
         self.tasks.tcp_server = await reCreate(self.tasks.tcp_server, self.tcpServer__)
         # now the tasks runs independently
@@ -208,7 +213,7 @@ class MasterTCPServerThread(TaskThread):
         else:
             pass
     
-    # *** custom recurrent tasks ***
+    # *** custom rescheduling tasks ***
 
     async def tcpServer__(self):
         try:

@@ -43,8 +43,8 @@ your asyncio python programs seamlessly into hierarchical, well-organized struct
 <p>Let’s consider a rather complex application which:</p>
 <ul class="simple">
 <li><p>Exposes a TCP server</p></li>
-<li><p>The TCP server accepts various client connections from LAN</p></li>
-<li><p>Processes the incoming data and reconstructs data frames from packets received from individual TCP client connections</p></li>
+<li><p>The server accepts various client connections from LAN</p></li>
+<li><p>Server processes the incoming data and reconstructs data frames from packets received from individual TCP client connections</p></li>
 <li><p>Processed data from each TCP client is forwarded through websockets to a final destination (say, to cloud)</p></li>
 <li><p>The processed data is also written into a database</p></li>
 </ul>
@@ -66,7 +66,7 @@ your asyncio python programs seamlessly into hierarchical, well-organized struct
 </pre></div>
 </div>
 <p>(another kind of hierarchy to solve the problem is, of course, also possible)</p>
-<p><code class="docutils literal notranslate"><span class="pre">MasterThread</span></code> starts the <code class="docutils literal notranslate"><span class="pre">TCPServerThread</span></code> which starts <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code> s on-demand.</p>
+<p><code class="docutils literal notranslate"><span class="pre">MasterThread</span></code> starts the <code class="docutils literal notranslate"><span class="pre">TCPServerThread</span></code> which then starts <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code> s on demand.</p>
 <p>Each <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code> starts a <code class="docutils literal notranslate"><span class="pre">DataProcessorThread</span></code> which reconstructs the packets from indicidual <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code> s.</p>
 <p>All data flows to upwards in the tree into <code class="docutils literal notranslate"><span class="pre">MasterThread</span></code> which then passes it onto to <code class="docutils literal notranslate"><span class="pre">WebsocketMasterThread</span></code> and from there to individual
 <code class="docutils literal notranslate"><span class="pre">WebSocketSubThread</span></code> s. <code class="docutils literal notranslate"><span class="pre">MasterThread</span></code> passes the data also to <code class="docutils literal notranslate"><span class="pre">DatabaseThread</span></code>.</p>
@@ -86,7 +86,7 @@ your asyncio python programs seamlessly into hierarchical, well-organized struct
 </pre></div>
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">UP</span></code> designates data going upwards in the tree, while <code class="docutils literal notranslate"><span class="pre">IN</span></code> shows incoming data at deeper level threads.</p>
-<p>Notice that there is not any intercommunication within this tree that is not strictly between a parent and a children.</p>
+<p>Notice that there is not any intercommunication within this tree that is not strictly between a parent and a child.</p>
 </div>
 <div class="section" id="threads-how">
 <h2>Threads, how?<a class="headerlink" href="#threads-how" title="Permalink to this headline">¶</a></h2>
@@ -106,7 +106,7 @@ some data from the packets using a <strong>task</strong>, <code class="docutils 
 <p>Have you ever run into a situation where you have a complex asyncio program running tons of simultaneous tasks?</p>
 <p>For example, you need to run <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> to “poll” several tasks to see if the tasks have finished or not and then your program’s logic is altered based on that result,
 creating an asynchronous mess, maybe even runaway tasks.</p>
-<p>Well, you don’t need to touch <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> ever again, after you start using TaskThread.</p>
+<p>Well, you don’t need to touch <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> ever again, after starting to use TaskThread.</p>
 <p>Your programs will also become naturally well-organized into threads that have
 separation of concerns and restricted communication - in accordance with the <a class="reference external" href="https://medium.com/&#64;sampsa.riikonen/a-roadtrip-between-object-oriented-and-functional-programming-d5161dc19052">HIMO principle</a>.</p>
 <p>I hope you got all warmed up by now.  Exciting, right!?</p>

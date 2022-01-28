@@ -1,16 +1,33 @@
+
 :: 
 
-    import asyncio, logging
-    import traceback
-    
+    import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
         delete, MessageSignal, verbose, signals
-    
-    
+
+Let's create a TCP server application.  The hierarchy looks like this:
+
+::
+
+    MasterTCPServerThread
+        TCPConnectionThread
+        TCPConnectionThread
+        ...
+
+As always, start by subclassing TaskThread.  First we create the child ``TCPConnectionThread``.
+
+:: 
+
     class TCPConnectionThread(TaskThread):
-    
-        def __init__(self, parent = None, reader = None, writer = None):
+
+Constructor takes as an argument stream reader and writer objects:
+
+:: 
+
+        def __init__(self, parent = None, reader: asyncio.StreamReader = None, writer: asyncio.StreamReader = None):
             super().__init__(parent = parent)
+            assert(reader is not None)
+            assert(writer is not None)
             self.reader = reader
             self.writer = writer
             self.peername, self.peerport = self.writer.get_extra_info("peername")
@@ -21,17 +38,24 @@
         def getInfo(self):
             return "<TCPConnectionThread %s connected to %s>" % (self.getId(), self.peername)
     
-    
+
+Re-scheduling tasks for reading and writing the client socket:
+
+:: 
+
         def initVars__(self):
             self.tasks.read_socket = None
             self.tasks.write_socket = None
     
-    
+
+In this version we just read the socket, so start the corresponding re-scheduling task:
+
+:: 
+
         @verbose
         async def enter__(self):
             self.logger.info("enter__ : %s", self.getInfo())
             self.tasks.read_socket = await reCreate(self.tasks.read_socket, self.readSocket__)
-    
     
         @verbose
         async def exit__(self):
@@ -39,7 +63,14 @@
             self.tasks.write_socket = await delete(self.tasks.write_socket)
             self.logger.debug("exit__: bye!")
     
-    
+
+Reads packet from the socket & re-schedules itself.  
+
+At failure, kill the whole ``TCPConnectionThread``.  This will inform the parent automagically & remove
+this child thread from the parent's registry.
+
+:: 
+
         async def readSocket__(self):
             try:
                 try:
@@ -64,7 +95,11 @@
                 self.logger.warning("readSocket__: failed with '%s'", e)
                 await self.stop()
             
-            
+
+Writing socket continuously (however, not used in this example):
+
+:: 
+
         async def writeSocket__(self, packet):        
             try:
                 self.writer.write(packet)
@@ -74,8 +109,12 @@
                 await self.stop()
         
     
+
+Next, create the parent ``MasterTCPServerThread``:
+
+:: 
+
     class MasterTCPServerThread(TaskThread):
-    
     
         def __init__(self, parent = None, name = "thread", pause = 10, port = 5002, max_clients = 10):
             super().__init__(parent = parent)
@@ -100,14 +139,8 @@
     
         @verbose
         async def enter__(self):
-            """Everything starts from here.  This cofunction is awaited (i.e. not scheduled as a task)
-            
-            - Await for something critical
-            - Shedule the re-scheduling tasks
-            """
             self.logger.info("entry point")
             self.tasks.tcp_server = await reCreate(self.tasks.tcp_server, self.tcpServer__)
-            # now the tasks runs independently
     
     
         @verbose
@@ -115,19 +148,24 @@
             self.tasks.tcp_server = await delete(self.tasks.tcp_server)
             self.logger.debug("exit__: bye!")
     
-    
+
+Each and every child / tcp client sends it's packets to the parent:
+
+:: 
+
         @verbose
         async def childsignalHandler__(self, signal, child):
-            """How to handle a certain signal from children?
-            """
             self.logger.debug("childsignalHandler__ : got signal %s from child %s", signal, child)
             if isinstance(signal, MessageSignal):
                 self.logger.info("Got message %s from child with id %s", signal.getMessage(), child.getId())
             else:
                 pass
         
-        # *** custom recurrent tasks ***
-    
+
+Keep on (re)creating the tcp server:
+
+:: 
+
         async def tcpServer__(self):
             try:
                 self.server = await asyncio.start_server(self.handler__, "", self.port)
@@ -145,9 +183,11 @@
             else:
                 self.logger.debug("tcpServer__ : new server waiting")
     
-    
-        # *** internal ***
-    
+
+At a client connection, start a new ``TCPConnectionThread``:
+
+:: 
+
         @verbose
         async def handler__(self, reader, writer):
             self.logger.debug("handler__ : new connection for %s", self.getInfo())
@@ -160,7 +200,11 @@
             await child_connection.run()
             await self.addChild(child_connection)
     
-    
+
+Run it!
+
+:: 
+
     if __name__ == "__main__":
         loglev = logging.DEBUG
     
@@ -175,3 +219,8 @@
             )
         loop = asyncio.get_event_loop()
         loop.run_until_complete(thread.run())
+
+While it's running, start one or several client connections using the provided client code.
+
+:: 
+

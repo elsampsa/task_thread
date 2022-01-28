@@ -20,8 +20,8 @@ A Sample Problem
 Let's consider a rather complex application which:
 
 - Exposes a TCP server
-- The TCP server accepts various client connections from LAN
-- Processes the incoming data and reconstructs data frames from packets received from individual TCP client connections
+- The server accepts various client connections from LAN
+- Server processes the incoming data and reconstructs data frames from packets received from individual TCP client connections
 - Processed data from each TCP client is forwarded through websockets to a final destination (say, to cloud)
 - The processed data is also written into a database
 
@@ -49,7 +49,7 @@ In the present case, a solution, described as a hierarchical list, could look li
 
 (another kind of hierarchy to solve the problem is, of course, also possible)
 
-``MasterThread`` starts the ``TCPServerThread`` which starts ``TCPConnectionThread`` s on-demand.
+``MasterThread`` starts the ``TCPServerThread`` which then starts ``TCPConnectionThread`` s on demand.
 
 Each ``TCPConnectionThread`` starts a ``DataProcessorThread`` which reconstructs the packets from indicidual ``TCPConnectionThread`` s.
 
@@ -75,7 +75,7 @@ Let's add this data flow to the hierarchical list:
 
 Here ``UP`` designates data going upwards in the tree, while ``IN`` shows incoming data at deeper level threads.
 
-Notice that there is not any intercommunication within this tree that is not strictly between a parent and a children.
+Notice that there is not any intercommunication within this tree that is not strictly between a parent and a child.
 
 Threads, how?
 -------------
@@ -105,7 +105,7 @@ Have you ever run into a situation where you have a complex asyncio program runn
 For example, you need to run ``asyncio.wait`` to "poll" several tasks to see if the tasks have finished or not and then your program's logic is altered based on that result,
 creating an asynchronous mess, maybe even runaway tasks.
 
-Well, you don't need to touch ``asyncio.wait`` ever again, after you start using TaskThread.  
+Well, you don't need to touch ``asyncio.wait`` ever again, after starting to use TaskThread.  
 
 Your programs will also become naturally well-organized into threads that have
 separation of concerns and restricted communication - in accordance with the `HIMO principle <https://medium.com/@sampsa.riikonen/a-roadtrip-between-object-oriented-and-functional-programming-d5161dc19052>`_.

@@ -125,13 +125,13 @@ You could write:
         return "<MyThread "+str(self.getId())+">"
         
 
-Key Methods
+API Methods
 -----------
 
 By using subclassing, we have defined what our TaskThread *does*.
-Next we take a look at the API methods, i.e. how to *use* the TaskThread.
+Next we take a look at the API methods, i.e. how to *use* a TaskThread.
 
-Let's take a quick overview on the available methods in the TaskThread class.
+Let's take a quick overview of the available methods in the TaskThread class.
 
 However, in order to know how to *really* use these methods, you need to go through the :ref:`examples <examples>`.
 

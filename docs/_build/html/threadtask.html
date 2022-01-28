@@ -60,7 +60,7 @@
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
 </pre></div>
 </div>
-<p><code class="docutils literal notranslate"><span class="pre">exit__</span></code> kills the task:</p>
+<p>In <code class="docutils literal notranslate"><span class="pre">exit__</span></code>, kill the re-scheduling tasks:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">)</span>
@@ -81,7 +81,7 @@
     <span class="k">return</span> <span class="s2">&quot;&lt;MyThread &quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">my_id</span><span class="p">)</span><span class="o">+</span><span class="s2">&quot;&gt;&quot;</span>
 </pre></div>
 </div>
-<p>Finally, define the only task that is running in this TaskThread:</p>
+<p>Finally, define the (only) task that is running in this TaskThread:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">helloTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;A task that prints hello &amp; re-schedules itself</span>
 <span class="sd">    &quot;&quot;&quot;</span>

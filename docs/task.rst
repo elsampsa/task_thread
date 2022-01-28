@@ -7,14 +7,17 @@ How do these "rescheduling tasks" that constitute a "TaskThread" look like?
 
 Let's consider a silly task that sleeps for 1 sec and then re-schedules itself
 
+First the imports:
+
 ::
 
     import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
         delete, verbose, signals
 
-    ...
-    ...
+The rescheduling task itself:
+
+::
 
     async def helloTask__(self):
         try:
