@@ -61,8 +61,7 @@ A large group of these auto-rescheduling tasks that toil around and do their stu
 Finally, remember to use the correct convenience function for each case:
 
 - When creating the task for the first time, use ``reCreate``
-- When rescheduling the task, use ``reCreate``
+- When rescheduling the task, use ``reSchedule``
 - When removing the task, use ``delete``
 
 Next, let's :ref:`bring TaskThreads and tasks together <threadtask>`.
-
