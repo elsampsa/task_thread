@@ -6,8 +6,6 @@ Organize your complex asyncio python projects into hierarchical, intercommunicat
 
 For documentation, click [here](https://elsampsa.github.io/task_thread)
 
-*Proper documentation coming soon!*
-
 ## Installing
 
 Development mode install:

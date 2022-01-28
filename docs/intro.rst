@@ -114,4 +114,12 @@ I hope you got all warmed up by now.  Exciting, right!?
 
 Next we will take a look at :ref:`an anatomy of a TaskThread <thread>`.
 
+Installing
+----------
+
+From PyPi simply with:
+
+::
+
+    pip3 install --user task-virtualthread
 
