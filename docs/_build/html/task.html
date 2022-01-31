@@ -69,7 +69,7 @@
 </pre></div>
 </div>
 <p>i.e., if everything is ok - the task has done it’s thing, say, reading payload from i/o,
-writing i/o, or whatever - it then then <strong>reschedules itself</strong>.</p>
+writing i/o, or whatever - it then <strong>reschedules itself</strong>.</p>
 <p>Rescheduling is done using the <code class="docutils literal notranslate"><span class="pre">reSchedule</span></code> convenience function:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello_task</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reSchedule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
 </pre></div>

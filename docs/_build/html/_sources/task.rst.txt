@@ -48,7 +48,7 @@ with emphasis on this structure:
 
 
 i.e., if everything is ok - the task has done it's thing, say, reading payload from i/o,
-writing i/o, or whatever - it then then **reschedules itself**.
+writing i/o, or whatever - it then **reschedules itself**.
 
 Rescheduling is done using the ``reSchedule`` convenience function:
 
