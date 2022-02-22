@@ -41,7 +41,7 @@ setup(
     # metadata for upload to PyPI
     author           = "Sampsa Riikonen",
     author_email     = "sampsa.riikonen@iki.fi",
-    description      = "A template for python projects",
+    description      = "TaskThread: asyncio made easy",
     license          = "MIT",
     keywords         = "python sphinx packaging",
     url              = "https://elsampsa.github.io/task_thread/", # project homepage

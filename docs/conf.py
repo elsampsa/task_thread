@@ -152,10 +152,11 @@ html_sidebars = {
 html_theme_options = {
   #'github_user'  : 'elsampsa',
   #'github_repo'  : 'TaskThread',
-  # 'analytics_id' : 'XX-XXX-X' # for google analytics tracking, uncomment this
+  'analytics_id' : 'G-S3B80BETD6',
   'page_width' : '60%',
   'body_max_width': 'auto'
 }
+# <meta name="google-site-verification" content="WrBCgQom7jukHKNAgp8op6oGQM98sutCTZhXkLUC7Yk" />
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
