@@ -24,7 +24,7 @@ pip3 install --user task-virtualthread
 Sampsa Riikonen
 
 ## Copyright
-(C) 2022 Sampsa Riikonen
+(C) 2021-2022 Sampsa Riikonen
 
 ## License
 MIT

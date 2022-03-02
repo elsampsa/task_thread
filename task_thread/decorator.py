@@ -1,8 +1,8 @@
 """decorator.py : decorators for coroutines to make development easier
 
-* Copyright: 2022 Sampsa Riikonen
+* Copyright: 2021-2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
-* Date     : 1/2022
+* Date     : 6/2021
 * Version  : 0.0.2
 
 This file is part of the task_thread library
