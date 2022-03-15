@@ -5,7 +5,7 @@
 About TaskThread
 ================
 
-*Never use asyncio.wait again*
+*Never use asyncio.wait or asyncio.gather again*
 
 TaskThread is a collection of tools, conventions and a base class that organizes 
 your asyncio python programs seamlessly into hierarchical, well-organized structures.
@@ -105,7 +105,7 @@ Have you ever run into a situation where you have a complex asyncio program runn
 For example, you need to run ``asyncio.wait`` to "poll" several tasks to see if the tasks have finished or not and then your program's logic is altered based on that result,
 creating an asynchronous mess, maybe even runaway tasks.
 
-Well, you don't need to touch ``asyncio.wait`` ever again, after starting to use TaskThread.  
+Well, you don't need to touch ``asyncio.wait`` or ``asyncio.gather`` ever again, after starting to use TaskThread.  
 
 Your programs will also become naturally well-organized into threads that have
 separation of concerns and restricted communication - in accordance with the `HIMO principle <https://medium.com/@sampsa.riikonen/a-roadtrip-between-object-oriented-and-functional-programming-d5161dc19052>`_.

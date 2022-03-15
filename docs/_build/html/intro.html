@@ -33,7 +33,7 @@
             
   <span class="target" id="intro"></span><div class="section" id="about-taskthread">
 <h1>About TaskThread<a class="headerlink" href="#about-taskthread" title="Permalink to this headline">¶</a></h1>
-<p><em>Never use asyncio.wait again</em></p>
+<p><em>Never use asyncio.wait or asyncio.gather again</em></p>
 <p>TaskThread is a collection of tools, conventions and a base class that organizes
 your asyncio python programs seamlessly into hierarchical, well-organized structures.</p>
 <p>These structures are analogical to threads and have a thread-like API.</p>
@@ -106,7 +106,7 @@ some data from the packets using a <strong>task</strong>, <code class="docutils 
 <p>Have you ever run into a situation where you have a complex asyncio program running tons of simultaneous tasks?</p>
 <p>For example, you need to run <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> to “poll” several tasks to see if the tasks have finished or not and then your program’s logic is altered based on that result,
 creating an asynchronous mess, maybe even runaway tasks.</p>
-<p>Well, you don’t need to touch <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> ever again, after starting to use TaskThread.</p>
+<p>Well, you don’t need to touch <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> or <code class="docutils literal notranslate"><span class="pre">asyncio.gather</span></code> ever again, after starting to use TaskThread.</p>
 <p>Your programs will also become naturally well-organized into threads that have
 separation of concerns and restricted communication - in accordance with the <a class="reference external" href="https://medium.com/&#64;sampsa.riikonen/a-roadtrip-between-object-oriented-and-functional-programming-d5161dc19052">HIMO principle</a>.</p>
 <p>I hope you got all warmed up by now.  Exciting, right!?</p>
