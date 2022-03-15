@@ -75,6 +75,11 @@ writing i/o, or whatever - it then <strong>reschedules itself</strong>.</p>
 </pre></div>
 </div>
 <p>A large group of these auto-rescheduling tasks that toil around and do their stuff, behave effectively like a “classical” running thread.</p>
+<p>A small warning about task re-scheduling is necessary:</p>
+<p>A function can re-schedule itself with quite a high frequency.  However, for each re-scheduling task, you should be at least, aware of the frequency:
+if a task re-schedules itself, say, a million times per second, you have created yourself a problem.</p>
+<p>Try to keep your task’s re-scheduling frequency in 100 times per second or less.  High re-scheduling frequency and its mitigation might become an issue in streaming applications,
+while in most other cases you really don’t need to think about it.</p>
 <p>Finally, remember to use the correct convenience function for each case:</p>
 <ul class="simple">
 <li><p>When creating the task for the first time, use <code class="docutils literal notranslate"><span class="pre">reCreate</span></code></p></li>

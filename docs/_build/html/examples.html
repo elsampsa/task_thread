@@ -514,6 +514,10 @@ this child thread from the parent’s registry.</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">packet</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">1500</span><span class="p">)</span>
+                <span class="sd">&quot;&quot;&quot;a word of warning here: try to tread as much bytes as you can with the</span>
+<span class="sd">                asyncio StreamReader instance (here self.reader) per re-scheduling,</span>
+<span class="sd">                in order to keep the rescheduling frequency reasonable</span>
+<span class="sd">                &quot;&quot;&quot;</span>
             <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;readSocket__ : reading failed : &#39;</span><span class="si">%s</span><span class="s2">&#39;&quot;</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;readSocket__: tcp connection </span><span class="si">%s</span><span class="s2"> terminated&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
@@ -524,6 +528,9 @@ this child thread from the parent’s registry.</p>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;readSocket__: got packet with size </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">packet</span><span class="p">))</span>
                     <span class="c1"># send the payload to parent:</span>
                     <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">handlePacket__</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
+                    <span class="sd">&quot;&quot;&quot;you can re-schedule with a moderate frequency, say, 100 times per second,</span>
+<span class="sd">                    but try to keep the re-scheduling frequency &quot;sane&quot;</span>
+<span class="sd">                    &quot;&quot;&quot;</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">read_socket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reSchedule</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">readSocket__</span><span class="p">);</span> <span class="k">return</span>
                 <span class="k">else</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;readSocket__: client at </span><span class="si">%s</span><span class="s2"> closed connection&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">peername</span><span class="p">)</span>

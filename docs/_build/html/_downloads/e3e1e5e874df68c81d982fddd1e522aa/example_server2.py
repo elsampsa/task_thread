@@ -78,6 +78,10 @@ class TCPConnectionThread(TaskThread):
         try:
             try:
                 packet = await self.reader.read(1500)
+                """a word of warning here: try to tread as much bytes as you can with the
+                asyncio StreamReader instance (here self.reader) per re-scheduling,
+                in order to keep the rescheduling frequency reasonable
+                """
             except Exception as e:
                 self.logger.warning("readSocket__ : reading failed : '%s'", e)
                 self.logger.info("readSocket__: tcp connection %s terminated", self.getInfo())
@@ -88,6 +92,9 @@ class TCPConnectionThread(TaskThread):
                     self.logger.debug("readSocket__: got packet with size %s", len(packet))
                     # send the payload to parent:
                     await self.handlePacket__(packet)
+                    """you can re-schedule with a moderate frequency, say, 100 times per second,
+                    but try to keep the re-scheduling frequency "sane"
+                    """
                     self.tasks.read_socket = await reSchedule(self.readSocket__); return
                 else:
                     self.logger.info("readSocket__: client at %s closed connection", self.peername)
