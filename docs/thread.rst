@@ -162,7 +162,7 @@ and wait until it has finished:
 
 A child thread can terminate itself, by calling ``self.stop()``.
 
-Stopping a child automatically removes it from any listening parent.
+Stopping a child automatically deregisters / removes it from any listening parent.
 
 You can add a child thread to a parent thread:
 
@@ -171,14 +171,6 @@ You can add a child thread to a parent thread:
     await thread.addChild(child)
 
 After that, parent starts listening any signals from the child.
-
-You can remove the child from a parent:
-
-::
-    
-    await thread.delChild(child)
-
-Now the child's signals are not listened by the parent anymore (it's removed from parent's registry).
 
 Finding a child, based on it's id, as returned by it's ``getId()`` method is done with:
 

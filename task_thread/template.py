@@ -3,7 +3,7 @@
 * Copyright: 2021-2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 6/2021
-* Version  : 0.0.2
+* Version  : 0.0.3
 
 This file is part of the task_thread library
 
@@ -14,6 +14,7 @@ Licensed according to the MIT License.  Please see file COPYING.MIT for more det
 import sys
 import logging
 import asyncio
+
 
 def test1():
     st = """Empty test
@@ -32,12 +33,12 @@ def test2():
 def main():
     pre = __name__ + "main :"
     print(pre, "main: arguments: ", sys.argv)
-    if (len(sys.argv) < 2):
+    if len(sys.argv) < 2:
         print(pre, "main: needs test number")
     else:
         st = "test" + str(sys.argv[1]) + "()"
         exec(st)
 
 
-if (__name__ == "__main__"):
+if __name__ == "__main__":
     main()

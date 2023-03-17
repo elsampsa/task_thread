@@ -1,8 +1,8 @@
 
 .. _examples:
 
-Tutorial / Examples
-===================
+Examples
+========
 
 1. Hello World
 --------------

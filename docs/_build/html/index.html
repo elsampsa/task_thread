@@ -1,37 +1,90 @@
-
 <!DOCTYPE html>
-
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta content="TaskThread: Asynchronous Programming for Humans" name="description" />
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta content="TaskThread: Asynchronous Programming for Humans" name="description" />
 <meta content="python, asyncio" name="keywords" />
 
-    <title>TaskThread &#8212; TaskThread  documentation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TaskThread &mdash; TaskThread  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="About TaskThread" href="intro.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+    <!-- as per https://stackoverflow.com/questions/23211695/modifying-content-width-of-the-sphinx-theme-read-the-docs -->
+    <link href="_static/rtd_override.css" rel="stylesheet" type="text/css">
 
-  </head><body>
-  
+</head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
-          
+<body class="wy-body-for-nav">
 
-          <div class="body" role="main">
-            
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+  <a href="#"><img src="_static/snakes.png" class="logo" alt="Logo"/>
+</a>
+    <div class="version">
+      TaskThread 0.0.3
+    </div>
+    <div>
+        Concurrent Asynchronous Python
+    </div>
+
+<!-- font awesome comes with the rtd package.. use like this:-->
+<br>
+<a href="https://github.com/elsampsa/task_thread" class="icon icon-github"> TaskThread @ github</a>
+<a href="https://github.com/elsampsa/task_thread/issues" class="fa fa-bug"> Issue Tracker @ github</a>
+
+<!-- don't even think about subclassing searchbox.html .. will never work!-->
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="intro.html">About TaskThread</a></li>
+<li class="toctree-l1"><a class="reference internal" href="thread.html">Anatomy of a TaskThread</a></li>
+<li class="toctree-l1"><a class="reference internal" href="task.html">Anatomy of a Task</a></li>
+<li class="toctree-l1"><a class="reference internal" href="threadtask.html">Threads and Tasks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright &amp; License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">TaskThread</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home"></a></li>
+      <li class="breadcrumb-item active">TaskThread</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
   <div class="section" id="taskthread">
 <h1>TaskThread<a class="headerlink" href="#taskthread" title="Permalink to this headline">¶</a></h1>
 <p>Contents:</p>
@@ -53,7 +106,7 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="task.html">Anatomy of a Task</a></li>
 <li class="toctree-l1"><a class="reference internal" href="threadtask.html">Threads and Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Tutorial / Examples</a><ul>
+<li class="toctree-l1"><a class="reference internal" href="examples.html">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#hello-world">1. Hello World</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#parent-child-structure">2. Parent/Child Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="examples.html#tcp-server">3. TCP Server</a></li>
@@ -67,78 +120,44 @@
 </div>
 
 
+           </div>
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
-
-<!-- Place this tag in your head or just before your close body tag. -->
-<script async defer src="https://buttons.github.io/buttons.js"></script>
-
-<a href="#">
-    <img class="logo" src="_static/snakes.png">
-</a>
-
-<p>Asynchronous Python for Human Beings</p>
-<a class="github-button" href="https://github.com/elsampsa/task_thread" data-size="large" data-show-count="true" aria-label="Star elsampsa/task_thread on GitHub">Star</a>
-<!--
-<p>
-  <iframe src="http://ghbtns.com/github-btn.html?user=elsampsa&repo=valkka-core&type=watch&count=true&size=large" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
--->
-
-<h3>Links</h3>
-<ul>
-  <li><a href="https://github.com/elsampsa/task_thread"><i class="fab fa-github"></i> task_thread @ GitHub</a></li>
-  <li><a href="https://github.com/elsampsa/task_thread/issues"><i class="fas fa-bug"></i> Issue Tracker</a></li>
-</ul>
-<h3><a href="#">Table of Contents</a></h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="intro.html">About TaskThread</a></li>
-<li class="toctree-l1"><a class="reference internal" href="thread.html">Anatomy of a TaskThread</a></li>
-<li class="toctree-l1"><a class="reference internal" href="task.html">Anatomy of a Task</a></li>
-<li class="toctree-l1"><a class="reference internal" href="threadtask.html">Threads and Tasks</a></li>
-<li class="toctree-l1"><a class="reference internal" href="examples.html">Tutorial / Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">Copyright &amp; License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="authors.html">Authors</a></li>
-</ul>
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2022 Sampsa Riikonen.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.5.4</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/index.rst.txt"
-          rel="nofollow">Page source</a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="intro.html" class="btn btn-neutral float-right" title="About TaskThread" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
-    
+  <hr/>
 
-    
-    <script type="text/javascript">
+  <div role="contentinfo">
+    <p>&#169; Copyright 2022-2023 Sampsa Riikonen.</p>
+  </div>
 
-      var _gaq = _gaq || [];
-      _gaq.push(['_setAccount', 'G-S3B80BETD6']);
-      _gaq.push(['_setDomainName', 'none']);
-      _gaq.push(['_setAllowLinker', true]);
-      _gaq.push(['_trackPageview']);
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
-      (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-      })();
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+    <!-- Theme Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-S3B80BETD6"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
 
-    </script>
-    
-  </body>
+      gtag('config', 'G-S3B80BETD6', {
+          'anonymize_ip': false,
+      });
+    </script> 
+
+</body>
 </html>

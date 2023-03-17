@@ -4,7 +4,7 @@ async and normal processes
 * Copyright: 2021-2022 Sampsa Riikonen
 * Authors  : Sampsa Riikonen
 * Date     : 6/2021
-* Version  : 0.0.2
+* Version  : 0.0.3
 
 This file is part of the task_thread library
 
@@ -14,18 +14,16 @@ import os, pickle, math
 
 
 class Duplex:
-
     def __init__(self, read_fd, write_fd):
         # file descriptors, i.e. numbers:
         self.read_fd = read_fd
         self.write_fd = write_fd
         # these are _io.FileIO objects:
-        self.reader = os.fdopen(read_fd, "br", buffering = 0)
-        self.writer = os.fdopen(write_fd, "bw", buffering = 0)
-    
+        self.reader = os.fdopen(read_fd, "br", buffering=0)
+        self.writer = os.fdopen(write_fd, "bw", buffering=0)
+
     def getReadIO(self):
-        """_io.FileIO object
-        """
+        """_io.FileIO object"""
         return self.reader
 
     def getReadFd(self):
@@ -35,14 +33,12 @@ class Duplex:
         return self.write_fd
 
     def getWriteIO(self):
-        """_io.FileIO object
-        """
+        """_io.FileIO object"""
         return self.writer
 
     def recv(self):
-        """Traditional blocking recv
-        """
-        msg = b''
+        """Traditional blocking recv"""
+        msg = b""
         N = None
         cc = 0
         while True:
@@ -51,19 +47,18 @@ class Duplex:
             cc += 8
             if N is None:
                 # decode the first 8 bytes into int
-                N = int.from_bytes(res, byteorder = "big")
+                N = int.from_bytes(res, byteorder="big")
                 # print("N>", N)
             # print(res, len(res))
             msg += res
             if cc >= N:
                 break
-        msg = msg[8:N] # remove any padding bytes
+        msg = msg[8:N]  # remove any padding bytes
         obj = pickle.loads(msg)
         return obj
 
     def send(self, obj):
-        """Tradition blocking send
-        """
+        """Tradition blocking send"""
         msg = to8ByteMessage(obj)
         n = self.writer.write(msg)
         # self.writer.flush() # no effect
@@ -75,10 +70,10 @@ class Duplex:
         self.writer.close()
 
 
-def getPipes(block_A = False, block_B = False):
+def getPipes(block_A=False, block_B=False):
     """
 
-    Either A or B can be blocking or non-blocking 
+    Either A or B can be blocking or non-blocking
 
     non-blocking pipe-terminal is required for asyncio
 
@@ -93,8 +88,8 @@ def getPipes(block_A = False, block_B = False):
     """
     B_read_fd, A_write_fd = os.pipe()
     A_read_fd, B_write_fd = os.pipe()
-    #print("read, write pair", B_read_fd, A_write_fd)
-    #print("read, write pair", A_read_fd, B_write_fd)
+    # print("read, write pair", B_read_fd, A_write_fd)
+    # print("read, write pair", A_read_fd, B_write_fd)
     # these a file descriptors, i.e. numbers
 
     if block_A:
@@ -118,9 +113,8 @@ def to8ByteMessage(obj):
     b = pickle.dumps(obj)
     # r, w, e = safe_select([], [self.write_fd], [])
     # print("writing to", self.write_fd)
-    val = len(b) + 8 # length of the message, including the first 8 bytes
-    lenbytes = val.to_bytes(8, byteorder = "big")
-    n_pad = math.ceil(val/8)*8 - val
+    val = len(b) + 8  # length of the message, including the first 8 bytes
+    lenbytes = val.to_bytes(8, byteorder="big")
+    n_pad = math.ceil(val / 8) * 8 - val
     pad = bytes(n_pad)
     return lenbytes + b + pad
-
