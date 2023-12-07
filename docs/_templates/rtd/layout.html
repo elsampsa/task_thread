@@ -4,12 +4,14 @@
 {% endblock %}
 
 {% block extrahead %}
-    <!-- as per https://stackoverflow.com/questions/23211695/modifying-content-width-of-the-sphinx-theme-read-the-docs -->
-    <link href="{{ pathto("_static/rtd_override.css", True) }}" rel="stylesheet" type="text/css">
+<!-- as per https://stackoverflow.com/questions/23211695/modifying-content-width-of-the-sphinx-theme-read-the-docs -->
+<link href="{{ pathto("_static/rtd_override.css", True) }}" rel="stylesheet" type="text/css">
+<script src="https://kit.fontawesome.com/1f90d3565b.js" crossorigin="anonymous"></script>
 {% endblock %}
 
 {%- block sidebartitle %}
 
+<!--
 {%- if logo and theme_logo_only %}
   <a href="{{ pathto(master_doc) }}">
 {%- else %}
@@ -27,6 +29,15 @@
   {%- endif %}
 {%- endif %}
 </a>
+-->
+
+<!--
+NOTE: we are starting to have "version creep" here..  at the moment, with Sphinx==7.2.6 and sphinx-rtd-theme==1.3.0 the only thing that
+works is this:
+-->
+<a href="{{ pathto(master_doc) }}">
+<img src="{{ pathto('_static/logo.png', 1) }}" class="logo" style="width: 200px; height: auto; border-radius: 0px 6px 6px 0px;" alt="{{ _('Logo') }}"/>
+</a>    
 
 {%- if theme_display_version %}
   {%- set nav_version = version %}
@@ -45,8 +56,9 @@
 
 <!-- font awesome comes with the rtd package.. use like this:-->
 <br>
-<a href="https://github.com/elsampsa/task_thread" class="icon icon-github"> TaskThread @ github</a>
-<a href="https://github.com/elsampsa/task_thread/issues" class="fa fa-bug"> Issue Tracker @ github</a>
+<a href="https://github.com/elsampsa/task_thread" target="_blank" rel="noopener noreferrer"> <i class="fa-brands fa-github"></i> TaskThread @ github</a>
+<a href="https://github.com/elsampsa/task_thread/issues" target="_blank" rel="noopener noreferrer"> <i class="fas fa-bug"></i> Issue Tracker @ github</a>
+<a href="https://discord.com/channels/1116100310574837812/1116101478235521205" target="_blank" rel="noopener noreferrer"> <i class="fa-brands fa-discord"></i> Discord </a>
 
 <!-- don't even think about subclassing searchbox.html .. will never work!-->
 {%- include "searchbox.html" %}

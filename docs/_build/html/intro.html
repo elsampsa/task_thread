@@ -1,23 +1,28 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>About TaskThread &mdash; TaskThread  documentation</title><link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <title>About TaskThread &mdash; TaskThread  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/doctools.js"></script>
+  
+        <script src="_static/jquery.js?v=5d32c60e"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="_static/doctools.js?v=888ff710"></script>
+        <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Anatomy of a TaskThread" href="thread.html" />
     <link rel="prev" title="TaskThread" href="index.html" />
-    <!-- as per https://stackoverflow.com/questions/23211695/modifying-content-width-of-the-sphinx-theme-read-the-docs -->
-    <link href="_static/rtd_override.css" rel="stylesheet" type="text/css">
+<!-- as per https://stackoverflow.com/questions/23211695/modifying-content-width-of-the-sphinx-theme-read-the-docs -->
+<link href="_static/rtd_override.css" rel="stylesheet" type="text/css">
+<script src="https://kit.fontawesome.com/1f90d3565b.js" crossorigin="anonymous"></script>
 
 </head>
 
@@ -27,7 +32,18 @@
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-  <a href="index.html"><img src="_static/snakes.png" class="logo" alt="Logo"/>
+
+<!--
+  <a href="index.html" class="icon icon-home"> TaskThread
+</a>
+-->
+
+<!--
+NOTE: we are starting to have "version creep" here..  at the moment, with Sphinx==7.2.6 and sphinx-rtd-theme==1.3.0 the only thing that
+works is this:
+-->
+<a href="index.html">
+<img src="_static/logo.png" class="logo" style="width: 200px; height: auto; border-radius: 0px 6px 6px 0px;" alt="Logo"/>
 </a>
     <div class="version">
       TaskThread 0.0.3
@@ -38,13 +54,14 @@
 
 <!-- font awesome comes with the rtd package.. use like this:-->
 <br>
-<a href="https://github.com/elsampsa/task_thread" class="icon icon-github"> TaskThread @ github</a>
-<a href="https://github.com/elsampsa/task_thread/issues" class="fa fa-bug"> Issue Tracker @ github</a>
+<a href="https://github.com/elsampsa/task_thread" target="_blank" rel="noopener noreferrer"> <i class="fa-brands fa-github"></i> TaskThread @ github</a>
+<a href="https://github.com/elsampsa/task_thread/issues" target="_blank" rel="noopener noreferrer"> <i class="fas fa-bug"></i> Issue Tracker @ github</a>
+<a href="https://discord.com/channels/1116100310574837812/1116101478235521205" target="_blank" rel="noopener noreferrer"> <i class="fa-brands fa-discord"></i> Discord </a>
 
 <!-- don't even think about subclassing searchbox.html .. will never work!-->
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -79,7 +96,7 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a></li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
       <li class="breadcrumb-item active">About TaskThread</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/intro.rst.txt" rel="nofollow"> View page source</a>
@@ -90,15 +107,15 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <span class="target" id="intro"></span><div class="section" id="about-taskthread">
-<h1>About TaskThread<a class="headerlink" href="#about-taskthread" title="Permalink to this headline">¶</a></h1>
+  <span class="target" id="intro"></span><section id="about-taskthread">
+<h1>About TaskThread<a class="headerlink" href="#about-taskthread" title="Link to this heading"></a></h1>
 <p><em>Never use asyncio.wait or asyncio.gather again</em></p>
 <p>TaskThread is a collection of tools, conventions and a base class that organizes
 your asyncio python programs seamlessly into hierarchical, well-organized structures.</p>
 <p>These structures are analogical to threads and have a thread-like API.</p>
 <p>Let’s illustrate what all this is about by an example.</p>
-<div class="section" id="a-sample-problem">
-<h2>A Sample Problem<a class="headerlink" href="#a-sample-problem" title="Permalink to this headline">¶</a></h2>
+<section id="a-sample-problem">
+<h2>A Sample Problem<a class="headerlink" href="#a-sample-problem" title="Link to this heading"></a></h2>
 <p>Let’s consider a rather complex application which:</p>
 <ul class="simple">
 <li><p>Exposes a TCP server</p></li>
@@ -146,9 +163,9 @@ your asyncio python programs seamlessly into hierarchical, well-organized struct
 </div>
 <p>Here <code class="docutils literal notranslate"><span class="pre">UP</span></code> designates data going upwards in the tree, while <code class="docutils literal notranslate"><span class="pre">IN</span></code> shows incoming data at deeper level threads.</p>
 <p>Notice that there is not any intercommunication within this tree that is not strictly between a parent and a child.</p>
-</div>
-<div class="section" id="threads-how">
-<h2>Threads, how?<a class="headerlink" href="#threads-how" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="threads-how">
+<h2>Threads, how?<a class="headerlink" href="#threads-how" title="Link to this heading"></a></h2>
 <p>So, how to implement such “threads” ?  After all this is asyncio, not multithreading!</p>
 <p>Well, the entities named here <code class="docutils literal notranslate"><span class="pre">MasterThread</span></code>, <code class="docutils literal notranslate"><span class="pre">TCPServerThread</span></code>, etc. are not really “threads”, but collection of asyncio <strong>tasks</strong> grouped together in a smart way - thus the name TaskThread.
 The intercom between the “threads” is done using asyncio <strong>queues</strong>.</p>
@@ -159,9 +176,9 @@ some data from the packets using a <strong>task</strong>, <code class="docutils 
 <p>These <strong>queues</strong> and listener <strong>tasks</strong> work seamlessly and are hidden from the TaskThread API user.</p>
 <p>At the core of TaskThread philosophy lies <strong>rescheduling tasks</strong>, i.e. asyncio tasks that reschedule themselves, giving the appearance of “threads” and a thread-like API.</p>
 <p>The only thing the API user needs to worry about, is how to initiate, re-schedule and terminate these tasks within their TaskThread implementation.</p>
-</div>
-<div class="section" id="advantages">
-<h2>Advantages<a class="headerlink" href="#advantages" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="advantages">
+<h2>Advantages<a class="headerlink" href="#advantages" title="Link to this heading"></a></h2>
 <p>Have you ever run into a situation where you have a complex asyncio program running tons of simultaneous tasks?</p>
 <p>For example, you need to run <code class="docutils literal notranslate"><span class="pre">asyncio.wait</span></code> to “poll” several tasks to see if the tasks have finished or not and then your program’s logic is altered based on that result,
 creating an asynchronous mess, maybe even runaway tasks.</p>
@@ -170,15 +187,15 @@ creating an asynchronous mess, maybe even runaway tasks.</p>
 separation of concerns and restricted communication - in accordance with the <a class="reference external" href="https://medium.com/&#64;sampsa.riikonen/a-roadtrip-between-object-oriented-and-functional-programming-d5161dc19052">HIMO principle</a>.</p>
 <p>I hope you got all warmed up by now.  Exciting, right!?</p>
 <p>Next we will take a look at <a class="reference internal" href="thread.html#thread"><span class="std std-ref">an anatomy of a TaskThread</span></a>.</p>
-</div>
-<div class="section" id="installing">
-<h2>Installing<a class="headerlink" href="#installing" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="installing">
+<h2>Installing<a class="headerlink" href="#installing" title="Link to this heading"></a></h2>
 <p>From PyPi simply with:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip3</span> <span class="n">install</span> <span class="o">--</span><span class="n">user</span> <span class="n">task</span><span class="o">-</span><span class="n">virtualthread</span>
 </pre></div>
 </div>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
