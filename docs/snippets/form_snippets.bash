@@ -7,5 +7,5 @@ codes="hello_world.py parent_child.py example_server.py example_server2.py"
 for i in $codes
 do
     echo $i
-    $exe pyeval.py -f $i > $i"_"
+    $exe pyeval.py $i > $i"_"
 done

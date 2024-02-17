@@ -1,5 +1,5 @@
 
-:: 
+.. code:: python
 
     import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
@@ -16,13 +16,13 @@ Let's create a TCP server application.  The hierarchy looks like this:
 
 As always, start by subclassing TaskThread.  First we create the child ``TCPConnectionThread``.
 
-:: 
+.. code:: python
 
     class TCPConnectionThread(TaskThread):
 
 Constructor takes as an argument stream reader and writer objects:
 
-:: 
+.. code:: python
 
         def __init__(self, parent = None, reader: asyncio.StreamReader = None, writer: asyncio.StreamReader = None):
             super().__init__(parent = parent)
@@ -41,7 +41,7 @@ Constructor takes as an argument stream reader and writer objects:
 
 Re-scheduling tasks for reading and writing the client socket:
 
-:: 
+.. code:: python
 
         def initVars__(self):
             self.tasks.read_socket = None
@@ -50,7 +50,7 @@ Re-scheduling tasks for reading and writing the client socket:
 
 In this version we just read the socket, so start the corresponding re-scheduling task:
 
-:: 
+.. code:: python
 
         @verbose
         async def enter__(self):
@@ -69,7 +69,7 @@ Reads packet from the socket & re-schedules itself.
 At failure, kill the whole ``TCPConnectionThread``.  This will inform the parent automagically & remove
 this child thread from the parent's registry.
 
-:: 
+.. code:: python
 
         async def readSocket__(self):
             try:
@@ -98,7 +98,7 @@ this child thread from the parent's registry.
 
 Writing socket continuously (however, not used in this example):
 
-:: 
+.. code:: python
 
         async def writeSocket__(self, packet):        
             try:
@@ -112,7 +112,7 @@ Writing socket continuously (however, not used in this example):
 
 Next, create the parent ``MasterTCPServerThread``:
 
-:: 
+.. code:: python
 
     class MasterTCPServerThread(TaskThread):
     
@@ -151,7 +151,7 @@ Next, create the parent ``MasterTCPServerThread``:
 
 Each and every child / tcp client sends it's packets to the parent:
 
-:: 
+.. code:: python
 
         @verbose
         async def childsignalHandler__(self, signal, child):
@@ -164,7 +164,7 @@ Each and every child / tcp client sends it's packets to the parent:
 
 Keep on (re)creating the tcp server:
 
-:: 
+.. code:: python
 
         async def tcpServer__(self):
             try:
@@ -186,7 +186,7 @@ Keep on (re)creating the tcp server:
 
 At a client connection, start a new ``TCPConnectionThread``:
 
-:: 
+.. code:: python
 
         @verbose
         async def handler__(self, reader, writer):
@@ -203,7 +203,7 @@ At a client connection, start a new ``TCPConnectionThread``:
 
 Run it!
 
-:: 
+.. code:: python
 
     if __name__ == "__main__":
         loglev = logging.DEBUG
@@ -221,6 +221,3 @@ Run it!
         loop.run_until_complete(thread.run())
 
 While it's running, start one or several client connections using the provided client code.
-
-:: 
-

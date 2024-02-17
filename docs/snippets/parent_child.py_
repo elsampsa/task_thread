@@ -1,5 +1,5 @@
 
-:: 
+.. code:: python
 
     import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
@@ -8,7 +8,7 @@
 
 Let's define a signal for parent/child communication
 
-:: 
+.. code:: python
 
     class MessageSignal(signals.Signal):
         def __init__(self, origin, message):
@@ -25,7 +25,7 @@ Let's define a signal for parent/child communication
 We use the same ``MyThread`` as in the previous example. 
 We will use it as a basis for further subclassing
 
-:: 
+.. code:: python
 
     class MyThread(TaskThread):
         # as in previous example
@@ -34,13 +34,13 @@ We will use it as a basis for further subclassing
 
 Let's create a child thread.  This thread sends a message to it's parent every 5 seconds:
 
-:: 
+.. code:: python
 
     class ChildThread(MyThread):
 
 Define a rescheduling task that sends a message to it's parent every 5 seconds
 
-:: 
+.. code:: python
 
         async def messageTask__(self):
             try:
@@ -62,7 +62,7 @@ Define a rescheduling task that sends a message to it's parent every 5 seconds
 
 Add the new task to ``self.tasks`` namespace
 
-:: 
+.. code:: python
 
         def initVars__(self):
             # tasks
@@ -74,7 +74,7 @@ Add the new task to ``self.tasks`` namespace
 
 Start both tasks at thread start
 
-:: 
+.. code:: python
 
         @verbose
         async def enter__(self):
@@ -85,7 +85,7 @@ Start both tasks at thread start
 
 Kill both tasks at thread exit
 
-:: 
+.. code:: python
 
         @verbose
         async def exit__(self):
@@ -97,7 +97,7 @@ Kill both tasks at thread exit
 
 Now the parent thread that receives signals from the child:
 
-:: 
+.. code:: python
 
     class ParentThread(MyThread):
 
@@ -109,7 +109,7 @@ After starting, the child thread is added to the parent's registry using ``addCh
 
 You can experiment by adding more and more child threads.
 
-:: 
+.. code:: python
 
         @verbose
         async def enter__(self):
@@ -122,7 +122,7 @@ You can experiment by adding more and more child threads.
 
 Define how we handle those signals coming from the running child thread:
 
-:: 
+.. code:: python
 
         @verbose
         async def childsignalHandler__(self, signal, child):
@@ -140,7 +140,7 @@ That's it!  Nothing else is needed: when the parent thread terminates, it automa
 
 Run the program with:
 
-:: 
+.. code:: python
 
     if __name__ == "__main__":
         loglev = logging.DEBUG
@@ -156,6 +156,3 @@ Run the program with:
         loop.run_until_complete(thread.run())
 
 Terminate by pressing CTRL-C.
-
-:: 
-

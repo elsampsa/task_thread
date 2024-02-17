@@ -9,7 +9,7 @@ A bit more complex TCP server with intercom and dataframe reconstruction:
 
 Use the provided client-side code to play around with this.
 
-:: 
+.. code:: python
 
     
     import asyncio, logging, json

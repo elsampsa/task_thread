@@ -1,12 +1,14 @@
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Examples &mdash; TaskThread  documentation</title>
-      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=19f00094" />
+
+  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
@@ -113,17 +115,17 @@ works is this:
 <h2>1. Hello World<a class="headerlink" href="#hello-world" title="Link to this heading"></a></h2>
 <p>Download example code from <a class="reference download internal" download="" href="_downloads/a18b081f7d6dcca4c52c91e2f6deb6c3/hello_world.py"><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p>
 <p>The same “hello world” example we already discussed <a class="reference internal" href="threadtask.html#threadtask"><span class="std std-ref">here</span></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
     <span class="n">delete</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
 </pre></div>
 </div>
 <p>Define TaskThread by subclassing</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>Let’s define a rescheduling task that sleeps for a one seconds &amp; then reschedules itself</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">helloTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">helloTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Hello from helloTask__ at </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
@@ -139,26 +141,26 @@ works is this:
 </pre></div>
 </div>
 <p>Remember to call the superclass constructor</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">my_id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">my_id</span> <span class="o">=</span> <span class="n">my_id</span>
 </pre></div>
 </div>
 <p>Create the tasks under the self.tasks namespace &amp; initialize them to <code class="docutils literal notranslate"><span class="pre">None</span></code></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># tasks</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># self.helloTask__</span>
 </pre></div>
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">helloTask__</span></code> is started for the first time when the thread is started:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__ :&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Define what happens at thread exit: delete any running tasks</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Close sockets, databases, etc.  Overwrite in child class.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -167,7 +169,7 @@ works is this:
 </pre></div>
 </div>
 <p>Here we would define how signals from a parent are handled.  In this example case nothing.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">signalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;signalHandler__ : got signal </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">)</span>
 
@@ -179,7 +181,7 @@ works is this:
 </pre></div>
 </div>
 <p>Let’s run MyThread!  Terminate by pressing CTRL-C.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">loglev</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;MyThread&quot;</span><span class="p">)</span>
@@ -194,13 +196,13 @@ works is this:
 <section id="parent-child-structure">
 <h2>2. Parent/Child Structure<a class="headerlink" href="#parent-child-structure" title="Link to this heading"></a></h2>
 <p>Download example code from <a class="reference download internal" download="" href="_downloads/c1dd4f4f2f4cf8025c3a2ba25bdb6544/parent_child.py"><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
     <span class="n">delete</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
 </pre></div>
 </div>
 <p>Let’s define a signal for parent/child communication</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MessageSignal</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">Signal</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MessageSignal</span><span class="p">(</span><span class="n">signals</span><span class="o">.</span><span class="n">Signal</span><span class="p">):</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">origin</span> <span class="o">=</span> <span class="n">origin</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
@@ -214,17 +216,17 @@ works is this:
 </div>
 <p>We use the same <code class="docutils literal notranslate"><span class="pre">MyThread</span></code> as in the previous example.
 We will use it as a basis for further subclassing</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MyThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
     <span class="c1"># as in previous example</span>
     <span class="c1"># ...</span>
 </pre></div>
 </div>
 <p>Let’s create a child thread.  This thread sends a message to it’s parent every 5 seconds:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChildThread</span><span class="p">(</span><span class="n">MyThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ChildThread</span><span class="p">(</span><span class="n">MyThread</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>Define a rescheduling task that sends a message to it’s parent every 5 seconds</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">messageTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">messageTask__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;messageTask__: sending a message to parent&quot;</span><span class="p">)</span>
@@ -243,7 +245,7 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Add the new task to <code class="docutils literal notranslate"><span class="pre">self.tasks</span></code> namespace</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="c1"># tasks</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span>   <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># self.helloTask__</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># self.messageTask__</span>
@@ -252,7 +254,7 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Start both tasks at thread start</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
@@ -260,7 +262,7 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Kill both tasks at thread exit</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="k">await</span> <span class="n">delete</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
@@ -268,14 +270,14 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Now the parent thread that receives signals from the child:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ParentThread</span><span class="p">(</span><span class="n">MyThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">ParentThread</span><span class="p">(</span><span class="n">MyThread</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>Start <code class="docutils literal notranslate"><span class="pre">self.helloTask__</span></code> just like in the child thread.</p>
 <p>The new bit here is, that we create and start a child thread at parent thread start.</p>
 <p>After starting, the child thread is added to the parent’s registry using <code class="docutils literal notranslate"><span class="pre">addChild</span></code>.</p>
 <p>You can experiment by adding more and more child threads.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__&quot;</span><span class="p">)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">hello</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">helloTask__</span><span class="p">)</span>
@@ -285,7 +287,7 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Define how we handle those signals coming from the running child thread:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">childsignalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;childsignalHandler__ : got signal </span><span class="si">%s</span><span class="s2"> from child </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="o">.</span><span class="n">getId</span><span class="p">())</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">MessageSignal</span><span class="p">):</span>
@@ -298,7 +300,7 @@ We will use it as a basis for further subclassing</p>
 <p>Please note that you can also start child threads “dynamically”, i.e. anywhere in your classes internal methods/recheduling tasks, not just at <code class="docutils literal notranslate"><span class="pre">enter__</span></code>.</p>
 <p>That’s it!  Nothing else is needed: when the parent thread terminates, it automagically terminates all of it’s child threads.</p>
 <p>Run the program with:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">loglev</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;ParentThread&quot;</span><span class="p">)</span>
@@ -313,9 +315,6 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Terminate by pressing CTRL-C.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">end</span> <span class="n">of</span> <span class="n">inclusion</span> <span class="kn">from</span> <span class="s2">&quot;snippets/parent_child.py_&quot;</span>
-</pre></div>
-</div>
 </section>
 <section id="tcp-server">
 <h2>3. TCP Server<a class="headerlink" href="#tcp-server" title="Link to this heading"></a></h2>
@@ -323,7 +322,7 @@ We will use it as a basis for further subclassing</p>
 <li><p>Download server example code from <a class="reference download internal" download="" href="_downloads/ef5c78e045abd894d5d4d0c53efb047e/example_server.py"><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p></li>
 <li><p>Download client side code from <a class="reference download internal" download="" href="_downloads/a5acc46a2c9241a97e295f04f5174070/client.py"><code class="xref download docutils literal notranslate"><span class="pre">[here]</span></code></a></p></li>
 </ul>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\
     <span class="n">delete</span><span class="p">,</span> <span class="n">MessageSignal</span><span class="p">,</span> <span class="n">verbose</span><span class="p">,</span> <span class="n">signals</span>
 </pre></div>
@@ -336,11 +335,11 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>As always, start by subclassing TaskThread.  First we create the child <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TCPConnectionThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">TCPConnectionThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
 </pre></div>
 </div>
 <p>Constructor takes as an argument stream reader and writer objects:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">reader</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">writer</span><span class="p">:</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">StreamReader</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
     <span class="k">assert</span><span class="p">(</span><span class="n">reader</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
     <span class="k">assert</span><span class="p">(</span><span class="n">writer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
@@ -356,13 +355,13 @@ We will use it as a basis for further subclassing</p>
 </pre></div>
 </div>
 <p>Re-scheduling tasks for reading and writing the client socket:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">initVars__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">read_socket</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">write_socket</span> <span class="o">=</span> <span class="kc">None</span>
 </pre></div>
 </div>
 <p>In this version we just read the socket, so start the corresponding re-scheduling task:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;enter__ : </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">read_socket</span> <span class="o">=</span> <span class="k">await</span> <span class="n">reCreate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tasks</span><span class="o">.</span><span class="n">read_socket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">readSocket__</span><span class="p">)</span>
@@ -377,7 +376,7 @@ We will use it as a basis for further subclassing</p>
 <p>Reads packet from the socket &amp; re-schedules itself.</p>
 <p>At failure, kill the whole <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code>.  This will inform the parent automagically &amp; remove
 this child thread from the parent’s registry.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">readSocket__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">readSocket__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">packet</span> <span class="o">=</span> <span class="k">await</span> <span class="bp">self</span><span class="o">.</span><span class="n">reader</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
@@ -403,7 +402,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>Writing socket continuously (however, not used in this example):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">writeSocket__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">writeSocket__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">packet</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">packet</span><span class="p">)</span>
         <span class="c1"># await self.writer.drain() # this would flush</span>
@@ -413,7 +412,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>Next, create the parent <code class="docutils literal notranslate"><span class="pre">MasterTCPServerThread</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MasterTCPServerThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">MasterTCPServerThread</span><span class="p">(</span><span class="n">TaskThread</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;thread&quot;</span><span class="p">,</span> <span class="n">pause</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="mi">5002</span><span class="p">,</span> <span class="n">max_clients</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span><span class="p">)</span>
@@ -449,7 +448,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>Each and every child / tcp client sends it’s packets to the parent:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">childsignalHandler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;childsignalHandler__ : got signal </span><span class="si">%s</span><span class="s2"> from child </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">signal</span><span class="p">,</span> <span class="n">child</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">signal</span><span class="p">,</span> <span class="n">MessageSignal</span><span class="p">):</span>
@@ -459,7 +458,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>Keep on (re)creating the tcp server:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">tcpServer__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">async</span> <span class="k">def</span> <span class="nf">tcpServer__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">server</span> <span class="o">=</span> <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">start_server</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">handler__</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
 
@@ -478,7 +477,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>At a client connection, start a new <code class="docutils literal notranslate"><span class="pre">TCPConnectionThread</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@verbose</span>
 <span class="k">async</span> <span class="k">def</span> <span class="nf">handler__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reader</span><span class="p">,</span> <span class="n">writer</span><span class="p">):</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;handler__ : new connection for </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">getInfo</span><span class="p">())</span>
 
@@ -492,7 +491,7 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>Run it!</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">loglev</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span>
 
     <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="s2">&quot;MasterTCPServerThread&quot;</span><span class="p">)</span>
@@ -509,9 +508,6 @@ this child thread from the parent’s registry.</p>
 </pre></div>
 </div>
 <p>While it’s running, start one or several client connections using the provided client code.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">..</span> <span class="n">end</span> <span class="n">of</span> <span class="n">inclusion</span> <span class="kn">from</span> <span class="s2">&quot;snippets/example_server.py_&quot;</span>
-</pre></div>
-</div>
 </section>
 <section id="data-streaming-tcp-server">
 <h2>4. Data Streaming TCP Server<a class="headerlink" href="#data-streaming-tcp-server" title="Link to this heading"></a></h2>
@@ -528,7 +524,7 @@ this child thread from the parent’s registry.</p>
 <li><p>Server reconstructs byte blobs / dataframes from the streaming byte payload</p></li>
 </ul>
 <p>Use the provided client-side code to play around with this.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">json</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">asyncio</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">json</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">traceback</span>
 <span class="kn">from</span> <span class="nn">task_thread</span> <span class="kn">import</span> <span class="n">TaskThread</span><span class="p">,</span> <span class="n">reCreate</span><span class="p">,</span> <span class="n">reSchedule</span><span class="p">,</span>\

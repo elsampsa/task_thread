@@ -1,7 +1,7 @@
 
 The same "hello world" example we already discussed :ref:`here <threadtask>`.
 
-:: 
+.. code:: python
 
     import asyncio, logging, traceback
     from task_thread import TaskThread, reCreate, reSchedule,\
@@ -9,13 +9,13 @@ The same "hello world" example we already discussed :ref:`here <threadtask>`.
 
 Define TaskThread by subclassing
 
-:: 
+.. code:: python
 
     class MyThread(TaskThread):
 
 Let's define a rescheduling task that sleeps for a one seconds & then reschedules itself
 
-:: 
+.. code:: python
 
         async def helloTask__(self):
             try:
@@ -34,7 +34,7 @@ Let's define a rescheduling task that sleeps for a one seconds & then reschedule
 
 Remember to call the superclass constructor
 
-:: 
+.. code:: python
 
         def __init__(self, my_id = 0, parent = None):
             super().__init__(parent = parent)
@@ -43,7 +43,7 @@ Remember to call the superclass constructor
 
 Create the tasks under the self.tasks namespace & initialize them to ``None``
 
-:: 
+.. code:: python
 
         def initVars__(self):
             # tasks
@@ -52,7 +52,7 @@ Create the tasks under the self.tasks namespace & initialize them to ``None``
 
 The ``helloTask__`` is started for the first time when the thread is started:
 
-:: 
+.. code:: python
 
         @verbose
         async def enter__(self):
@@ -62,7 +62,7 @@ The ``helloTask__`` is started for the first time when the thread is started:
 
 Define what happens at thread exit: delete any running tasks
 
-:: 
+.. code:: python
 
         @verbose
         async def exit__(self):
@@ -75,7 +75,7 @@ Define what happens at thread exit: delete any running tasks
 
 Here we would define how signals from a parent are handled.  In this example case nothing.
 
-:: 
+.. code:: python
 
         @verbose
         async def signalHandler__(self, signal):
@@ -91,7 +91,7 @@ Here we would define how signals from a parent are handled.  In this example cas
 
 Let's run MyThread!  Terminate by pressing CTRL-C.
 
-:: 
+.. code:: python
 
     if __name__ == "__main__":
         loglev = logging.DEBUG

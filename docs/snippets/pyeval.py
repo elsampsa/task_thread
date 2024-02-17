@@ -1,81 +1,101 @@
+#!/usr/bin/python3
+"""Script's first argument: input file
+"""
 import sys
-# pyeval.py -o/f/h filename.py
 
-if (sys.argv[1] == "-h"):
-    print("pyeval.py -o/f/h filename.py")
-    print()
-    print("for creating automatic .rst files from a .py file")
-    print()
-    print("o: make output, f: fix output, h: this help")
-    print()
-    print("pyeval.py -o routine.py > tmp.txt")
-    print("pyeval.py -f tmp.txt > routine.rst")
-    print()
-elif (sys.argv[1] == "-o"):
-    f = open(sys.argv[2])
-    lines = []
-    c = 0
-    cc = 0
-    inst = ""
-    csec = False
-    for line in f.readlines():
-        if (line.strip() == ""):
-            print(inst)
-        else:
-            st = line[:-1]
-            if (st[0] == "#"):
-                if (csec == False):  # entering comment section.. add extra line
-                    print
-                print(st)
-                csec = True
-            else:
-                # if (csec==True): # just left comments section.. add extra line
-                #    print()
-                csec = False
-                print
-                print(inst+"["+str(cc)+"]: "+st)
-                exec(st)
-                cc = cc+1
-            c = c+1
-else:
+def main():
     hide = False
     rst_mode = False
+    empty = None # checks if found comment or code sections were empty or not
     leadspace = 0
-    f = open(sys.argv[2])
+    f = open(sys.argv[1])
     lines = []
-    c = 0
+    c = 0 # line counter
+    last_csec = 0 # last line where a code section started
     inst = "    "
-    # print
-    #print(":: ")
-    # print
+    newlines = []
     for line in f.readlines():
-        st = line[:-1]
-        if st.strip() == "#<HIDE":
+        st = line[:-1] # remove newline
+        if st.strip().lower() in ["#<hide", "#</hide>"]:
             hide = False
+            c+=1
             continue
-        elif st.strip() == "#HIDE>":
+        elif st.strip().lower() in ["#hide>", "#<hide>"]:
             hide = True
         if hide:
+            c+=1
             continue
-        if (c == 0 and st.strip() != '"""<rtf>'):
+        if (c == 0 and st.strip() != '"""<rtf>'): 
+            # first line and NOT starting with comment section
+            # so start with code section
+            """print("")
+            print(".. code:: python")
             print("")
-            print(":: ")
-            print("")
-            print(inst+st)
-        elif (st.strip() == '"""<rtf>'):
+            print(inst+st)"""
+            newlines +=  [
+                "",
+                ".. code:: python",
+                "",
+                inst+st
+            ]
+        elif (st.strip() == '"""<rtf>'): 
+            # comment section starts
+            # let's see how many empty lines we had in the prepending code section
+            if empty:
+                # new comment section starts but the previous code
+                # section was empty .. so let's remote it
+                for i in range(0, empty):
+                    newlines.pop(-1)
             rst_mode = True
             # check how many leading spaces
             leadspace = len(st) - len(st.lstrip())
-            print("")
-        elif (st.strip() == '<rtf>"""'):
+            # print("")
+            newlines.append("")
+            empty = 1 # only empty lines in this comment section for the moment
+        elif (st.strip() == '<rtf>"""'): 
+            # rtf comment section stops - start code section again
+            if empty:
+                # new code section starts but the previous comment
+                # section was empty .. so let's remote it
+                for i in range(0, empty):
+                    newlines.pop(-1)
+            last_csec=len(newlines)
             rst_mode = False
-            print("")
-            print(":: ")
-            print("")
+            """print("")
+            print(".. code:: python")
+            print("")"""
+            newlines += [
+                "",
+                ".. code:: python",
+                ""
+            ]
+            empty = 3 # only empty lines in this code section for the moment
         elif (rst_mode == False):
-            print(inst+st)
+            # print into code section
+            # print(inst+st)
+            if (empty is not None) and len(st.strip()) == 0: # empty line in this code section
+                empty += 1
+            else:
+                empty = None # ok.. all the lines were not empty
+            newlines.append(inst+st)
         else:
-            # print(st.lstrip())
-            print(st[leadspace:])
-        c = c+1
-    print
+            # print into comment section
+            # print(st[leadspace:])
+            if (empty is not None) and len(st.strip()) == 0: # empty line in this comment section
+                empty += 1
+            else:
+                empty = None # ok.. all the lines were not empty
+            newlines.append(st[leadspace:])
+        c+=1
+
+    if empty:
+        # previous section was empty .. so let's remote it
+        for i in range(0, empty):
+            newlines.pop(-1)
+
+    for line in newlines:    
+        print(line)
+
+if __name__ == "__main__":
+    main()
+
